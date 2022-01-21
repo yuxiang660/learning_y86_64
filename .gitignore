@@ -1,0 +1,6 @@
+*.yo
+yas-grammar.c
+yas
+.vscode/
+*.o
+
