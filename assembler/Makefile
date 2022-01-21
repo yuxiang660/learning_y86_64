@@ -1,7 +1,7 @@
-CC=g++
+CC=gcc
 CFLAGS=-Wall -O1 -g
+# http://dinosaur.compilertools.net/flex/manpage.html
 LEX=flex
-LEXLIB=-lfl
 
 LEX_TARGET=yas-grammar
 ASSEMBLER=yas
@@ -18,7 +18,7 @@ $(LEX_TARGET).c: $(LEX_TARGET).lex
 	$(CC) $(CFLAGS) -c $<
 
 $(ASSEMBLER): $(OBJS)
-	$(CC) $(CFLAGS) $^ ${LEXLIB} -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 run:
 	./$(ASSEMBLER) example.ys

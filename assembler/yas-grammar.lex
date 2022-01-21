@@ -1,10 +1,11 @@
 /* Grammar for Y86-64 Assembler */
-%option noyywrap
-%option nounput
-
 %{
 #include "yas.h"
 %}
+
+%option noyywrap
+%option noinput
+%option nounput
 
 Instr         rrmovq|cmovle|cmovl|cmove|cmovne|cmovge|cmovg|rmmovq|mrmovq|irmovq|addq|subq|andq|xorq|jmp|jle|jl|je|jne|jge|jg|call|ret|pushq|popq|"."byte|"."word|"."long|"."quad|"."pos|"."align|halt|nop|iaddq
 Letter        [a-zA-Z]

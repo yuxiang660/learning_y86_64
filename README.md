@@ -48,6 +48,75 @@ To implement a lexer for Y86-64 processor. Then we can use is to convert Y86-64 
 0x200:                      | stack:
 ```
 
-## Flex程序
+## Flex程序: yas-grammar.lex
+### option配置
+```lex
+%option noyywrap
+%option noinput
+%option nounput
+```
+* noyywrap表示不需要自定义的`yywrap()`，默认返回1，代表只进行一次文件扫描
+* noinput表示不添加`input()`函数，以消除编译警告`warning: ‘input’ defined but not used`
+* nounput表示不添加`yyunput()`函数，以消除编译警告`warning: ‘yyunput’ defined but not used`
 
+### 声明
+```lex
+%{
+#include "yas.h"
+%}
+```
+* 此部分代码会被原样搬到生产的C文件的开头部分
+* 头文件里主要包括了相关函数和变量的声明
+
+### 定义段
+```lex
+%option noyywrap
+%option noinput
+%option nounput
+
+Instr         rrmovq|cmovle|cmovl|cmove|cmovne|cmovge|cmovg|rmmovq|mrmovq|irmovq|addq|subq|andq|xorq|jmp|jle|jl|je|jne|jge|jg|call|ret|pushq|popq|"."byte|"."word|"."long|"."quad|"."pos|"."align|halt|nop|iaddq
+Letter        [a-zA-Z]
+Digit         [0-9]
+Ident         {Letter}({Letter}|{Digit}|_)*
+Hex           [0-9a-fA-F]
+Blank         [ \t]
+Newline       [\n\r]
+Return        [\r]
+Char          [^\n\r]
+Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r13|%r14
+
+/* ERR condition is started if no token is matched */
+%x ERR
+```
+* 各种选项
+    * `%option noyywrap`
+* 正则表达式和状态定义
+    * `Instr`匹配了所有Y86的指令名
+    * `Reg`匹配了15个寄存器ID
+* 状态定义
+    * `ERR`定义了error状态，通过`BEGIN ERR`跳转到此状态
+    * `0`是默认初始状态
+
+### 规则段
+```lex
+^{Char}*{Return}*{Newline}      {save_line(yytext); REJECT;} /* Snarf input line */
+#{Char}*{Return}*{Newline}      {finish_line(); lineno++;}
+"//"{Char}*{Return}*{Newline}   {finish_line(); lineno++;}
+"/*"{Char}*{Return}*{Newline}   {finish_line(); lineno++;}
+{Blank}*{Return}*{Newline}      {finish_line(); lineno++;}
+
+{Blank}+                        ;
+"$"+                            ;
+{Instr}                         add_instr(yytext);
+{Reg}                           add_reg(yytext);
+[-]?{Digit}+                    add_num(atoll(yytext));
+"0"[xX]{Hex}+                   add_num(atollh(yytext));
+[():,]                          add_punct(*yytext);
+{Ident}                         add_ident(yytext);
+{Char}                          {; BEGIN ERR;}
+<ERR>{Char}*{Newline}           {fail("Invalid line"); lineno++; BEGIN 0;}
+```
+
+### C函数定义
+* [yas-grammar.lex](assembler/yas-grammar.lex)没有此段内容，相关C函数和main函数都定义在了其他源文件内
 
