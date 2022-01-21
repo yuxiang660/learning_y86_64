@@ -25,4 +25,4 @@ run:
 	cat example.yo
 
 clean:
-	rm -rf $(ASSEMBLER) yas-grammar.c *.o *.yo
+	rm -rf $(ASSEMBLER) $(LEX_TARGET).c *.o *.yo
