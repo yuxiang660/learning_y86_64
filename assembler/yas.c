@@ -66,10 +66,10 @@ void save_line(char *s)
     int len = strlen(s);
     int i;
     if (len >= STRMAX)
-    fail("Input Line too long");
+        fail("Input Line too long");
     strcpy(input_line, s);
     for (i = len-1; input_line[i] == '\n' || input_line[i] == '\r'; i--)
-    input_line[i] = '\0'; /* Remove terminator */
+        input_line[i] = '\0'; /* Remove terminator */
 }
 
 /* Information about current instruction being generated */
@@ -192,9 +192,9 @@ void print_code(FILE *out, int pos)
 void fail(const char *message)
 {
     if (!error_mode) {
-    fprintf(stderr, "Error on line %d: %s\n", lineno, message);
-    fprintf(stderr, "Line %d, Byte 0x%.4x: %s\n",
-        lineno, bytepos, input_line);
+        fprintf(stderr, "Error on line %d: %s\n", lineno, message);
+        fprintf(stderr, "Line %d, Byte 0x%.4x: %s\n",
+            lineno, bytepos, input_line);
     }
     error_mode = 1;
     hit_error = 1;
@@ -446,19 +446,19 @@ void add_token(token_t type, char *s, word_t i, char c)
 {
     char *t = NULL;
     if (!tcount)
-    start_line();
+        start_line();
     if (tpos >= TOK_PER_LINE-1) {
-    fail("Line too long");
-    return;
-    }
-    if (s) {
-    int len = strlen(s)+1;
-    if (strpos + len > STRMAX) {
         fail("Line too long");
         return;
     }
-    t = strcpy(strbuf+strpos, s);
-    strpos+= len;
+    if (s) {
+        int len = strlen(s)+1;
+        if (strpos + len > STRMAX) {
+            fail("Line too long");
+            return;
+        }
+        t = strcpy(strbuf+strpos, s);
+        strpos+= len;
     }
     tokens[tcount].type = type;
     tokens[tcount].sval = t;
@@ -515,8 +515,8 @@ int find_symbol(char *name)
 {
     int i;
     for (i = 0; i < symbol_cnt; i++)
-    if (strcmp(name, symbol_table[i].name) == 0)
-        return symbol_table[i].pos;
+        if (strcmp(name, symbol_table[i].name) == 0)
+            return symbol_table[i].pos;
     fail("Can't find label");
     return -1;
 }
@@ -525,12 +525,12 @@ int yywrap()
 {
     int i;
     if (tcount > 0) {
-    fail("Missing end-of-line on final line\n");
+        fail("Missing end-of-line on final line\n");
     }
     if (verbose && pass > 1) {
-    printf("Symbol Table:\n");
-    for (i = INIT_CNT; i < symbol_cnt; i++)
-        printf(" %s\t0x%x\n", symbol_table[i].name, symbol_table[i].pos);
+        printf("Symbol Table:\n");
+        for (i = INIT_CNT; i < symbol_cnt; i++)
+            printf(" %s\t0x%x\n", symbol_table[i].name, symbol_table[i].pos);
     }
     return 1;
 }
@@ -553,49 +553,49 @@ int main(int argc, char *argv[])
     if (argc < 2)
     usage(argv[0]);
     if (argv[nextarg][0] == '-') {
-      char flag = argv[nextarg][1];
-      switch (flag) {
-      case 'V':
-    vcode = 1;
-    if (argv[nextarg][2]) {
-        block_factor = atoi(argv[nextarg]+2);
-        if (block_factor != 8) {
-        fprintf(stderr, "Unknown blocking factor %d\n", block_factor);
-        exit(1);
+        char flag = argv[nextarg][1];
+        switch (flag) {
+        case 'V':
+            vcode = 1;
+            if (argv[nextarg][2]) {
+                block_factor = atoi(argv[nextarg]+2);
+                if (block_factor != 8) {
+                    fprintf(stderr, "Unknown blocking factor %d\n", block_factor);
+                    exit(1);
+                }
+            }
+            nextarg++;
+            break;
+        default:
+            usage(argv[0]);
         }
-    }
-    nextarg++;
-    break;
-      default:
-    usage(argv[0]);
-      }
     }
     rootlen = strlen(argv[nextarg])-3;
     if (strcmp(argv[nextarg]+rootlen, ".ys"))
-    usage(argv[0]);
+        usage(argv[0]);
     if (rootlen > 500) {
-    fprintf(stderr, "File name too long\n");
-    exit(1);
+        fprintf(stderr, "File name too long\n");
+        exit(1);
     }
     strncpy(infname, argv[nextarg], rootlen);
     strcpy(infname+rootlen, ".ys");
 
     yyin = fopen(infname, "r");
     if (!yyin) {
-    fprintf(stderr, "Can't open input file '%s'\n", infname);
-    exit(1);
+        fprintf(stderr, "Can't open input file '%s'\n", infname);
+        exit(1);
     }
 
     if (vcode) {
-      outfile = stdout;
+        outfile = stdout;
     } else {
-      strncpy(outfname, argv[nextarg], rootlen);
-      strcpy(outfname+rootlen, ".yo");
-      outfile = fopen(outfname, "w");
-      if (!outfile) {
-    fprintf(stderr, "Can't open output file '%s'\n", outfname);
-    exit(1);
-      }
+        strncpy(outfname, argv[nextarg], rootlen);
+        strcpy(outfname+rootlen, ".yo");
+        outfile = fopen(outfname, "w");
+        if (!outfile) {
+            fprintf(stderr, "Can't open output file '%s'\n", outfname);
+            exit(1);
+        }
     }
 
     pass = 1;
@@ -604,7 +604,7 @@ int main(int argc, char *argv[])
     fclose(yyin);
 
     if (hit_error)
-    exit(1);
+        exit(1);
 
     pass = 2;
     lineno = 1;
@@ -612,8 +612,8 @@ int main(int argc, char *argv[])
     bytepos = 0;
     yyin = fopen(infname, "r");
     if (!yyin) {
-    fprintf(stderr, "Can't open input file '%s'\n", infname);
-    exit(1);
+        fprintf(stderr, "Can't open input file '%s'\n", infname);
+        exit(1);
     }
 
     yylex();

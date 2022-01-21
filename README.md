@@ -91,7 +91,7 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
 * 各种选项
     * `%option noyywrap`
 * 正则表达式和状态定义
-    * `Instr`匹配了所有Y86的指令名
+    * `Instr`匹配了所有Y86的指令名，所有指令可参考：[Y86-64 Reference](doc/Y86-64 Reference.pdf)
     * `Reg`匹配了15个寄存器ID
 * 状态定义
     * `ERR`定义了error状态，通过`BEGIN ERR`跳转到此状态
@@ -116,6 +116,11 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
 {Char}                          {; BEGIN ERR;}
 <ERR>{Char}*{Newline}           {fail("Invalid line"); lineno++; BEGIN 0;}
 ```
+* `^{Char}*{Return}*{Newline}`
+    * 匹配非注释行
+    * 通过`save_line`保存当前行到全局变量：`input_line`
+    * `REJECT` directs the scanner to proceed on to the "second best" rule which matched the input (or a prefix of the input)
+        * 此处会对当前行继续匹配下面的规则
 
 ### C函数定义
 * [yas-grammar.lex](assembler/yas-grammar.lex)没有此段内容，相关C函数和main函数都定义在了其他源文件内
