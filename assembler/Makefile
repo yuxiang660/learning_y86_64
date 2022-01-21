@@ -1,30 +1,28 @@
 CC=g++
 CFLAGS=-Wall -O1 -g
-LEX = flex
-LEXLIB = -lfl
-YAS=./yas
+LEX=flex
+LEXLIB=-lfl
 
-all: yas
+LEX_TARGET=yas-grammar
+ASSEMBLER=yas
 
-yas-grammar.c: yas-grammar.lex
-	$(LEX) yas-grammar.lex
-	mv lex.yy.c yas-grammar.c
+SRCS := yas.c isa.c
+OBJS := $(LEX_TARGET).o $(SRCS:.c=.o)
 
-yas-grammar.o: yas-grammar.c
-	$(CC) $(CFLAGS) -c yas-grammar.c
+all: $(ASSEMBLER)
 
-yas.o: yas.c yas.h isa.h
-	$(CC) $(CFLAGS) -c yas.c
+$(LEX_TARGET).c: $(LEX_TARGET).lex
+	$(LEX) -o $@ $<
 
-isa.o: isa.c isa.h
-	$(CC) $(CFLAGS) -c isa.c
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
 
-yas: yas.o yas-grammar.o isa.o
-	$(CC) $(CFLAGS) yas-grammar.o yas.o isa.o ${LEXLIB} -o yas
+$(ASSEMBLER): $(OBJS)
+	$(CC) $(CFLAGS) $^ ${LEXLIB} -o $@
 
 run:
-	$(YAS) example.ys
+	./$(ASSEMBLER) example.ys
 	cat example.yo
 
 clean:
-	rm -rf yas-grammar.c
+	rm -rf $(ASSEMBLER) yas-grammar.c *.o *.yo

@@ -5,7 +5,7 @@ This project is used to learning Y86-64 processor simulator. For details, please
 * https://github.com/sysprog21/y86_64-tools
 
 # Y86-64 Assembler
-[Y86-64汇编器](assembler)可以将汇编代码转换成机器码。
+[Y86-64汇编器](assembler)在`flex`的帮助下将汇编代码转换成了机器码。
 
 ## Purpose
 To implement a lexer for Y86-64 processor. Then we can use is to convert Y86-64 assembly code to machine code. For example, the assembly code below (right part) can be converted to the machine code below (left part).
