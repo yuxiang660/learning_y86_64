@@ -124,7 +124,7 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
 
 * `{Blank}*{Return}*{Newline}`
     * 匹配换行符，表示一行结束
-    * 通过`finish_line`处理当前行的解析出的token，进入`finish_line`的时候，当前行的token都已经解析完成，并且存入了`tokens`数据中
+    * 通过`finish_line`处理当前行的解析出的token，进入`finish_line`的时候，当前行的token都已经解析完成，并且存入了`tokens`数据中:
         * token的类型有：`{ TOK_IDENT, TOK_NUM, TOK_REG, TOK_INSTR, TOK_PUNCT, TOK_ERR }`
         * token的内容是：
         ```cpp
@@ -135,6 +135,31 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
             char cval;  /* Character */
             token_t type; /* Type    */
         } token_rec;
+        ```
+    * 处理label
+        * "TOK_IDENT+TOK_PUNCT"，例如：`stack:`
+        * 通过`add_symbol`将TOK_IDENT和当前位置`bytepos`存入`symbol_table`
+        * 如果当前行只有label，通过`start_line()`重置后，结束当前行的处理，否则继续
+    * 处理instruction
+        * "TOK_INSTR"，除了label，非注释行都应该以instruction开头
+        * `.pos`和`.align`两个instruction需要特殊处理
+            * 如果是`.pos`，通过`bytepos = tokens[tpos].ival`调整bytepos
+            * 如果是`.align`，通过`bytepos = ((bytepos + a - 1) / a) * a`调整对齐位置，a是align的大小
+        * 普通instruction的结构:
+            * `find_instr`从`instruction_set`找到instruction的结构后，更新bytepos
+        ```cpp
+        typedef struct
+        {
+            const char *name;
+            unsigned char code; /* Byte code for instruction+op */
+            int bytes;
+            arg_t arg1;
+            int arg1pos;
+            int arg1hi; /* 0/1 for register argument, # bytes for allocation */
+            arg_t arg2;
+            int arg2pos;
+            int arg2hi; /* 0/1 */
+        } instr_t;
         ```
 
 * `{Ident}`

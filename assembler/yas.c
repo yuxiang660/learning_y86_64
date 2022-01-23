@@ -365,8 +365,7 @@ void finish_line()
     /* See if this is a labeled line */
     if (tokens[0].type == TOK_IDENT)
     {
-        if (tokens[1].type != TOK_PUNCT ||
-            tokens[1].cval != ':')
+        if (tokens[1].type != TOK_PUNCT || tokens[1].cval != ':')
         {
             fail("Missing Colon");
             start_line();
@@ -469,8 +468,7 @@ void finish_line()
     if (instr->arg2 != NO_ARG)
     {
         /* Get comma  */
-        if (tokens[tpos].type != TOK_PUNCT ||
-            tokens[tpos].cval != ',')
+        if (tokens[tpos].type != TOK_PUNCT || tokens[tpos].cval != ',')
         {
             fail("Expecting Comma");
             start_line();
