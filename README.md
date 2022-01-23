@@ -147,20 +147,20 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
             * 如果是`.align`，通过`bytepos = ((bytepos + a - 1) / a) * a`调整对齐位置，a是align的大小
         * 普通instruction的结构:
             * `find_instr`从`instruction_set`找到instruction的结构后，更新bytepos
-        ```cpp
-        typedef struct
-        {
-            const char *name;
-            unsigned char code; /* Byte code for instruction+op */
-            int bytes;
-            arg_t arg1;
-            int arg1pos;
-            int arg1hi; /* 0/1 for register argument, # bytes for allocation */
-            arg_t arg2;
-            int arg2pos;
-            int arg2hi; /* 0/1 */
-        } instr_t;
-        ```
+            ```cpp
+            typedef struct
+            {
+                const char *name;
+                unsigned char code; /* Byte code for instruction+op */
+                int bytes;
+                arg_t arg1;
+                int arg1pos;
+                int arg1hi; /* 0/1 for register argument, # bytes for allocation */
+                arg_t arg2;
+                int arg2pos;
+                int arg2hi; /* 0/1 */
+            } instr_t;
+            ```
 
 * `{Ident}`
     * 匹配标识符
@@ -194,6 +194,23 @@ main函数定义在[yas.c](assembler/yas.c)中，它包括了两次pass
     * 在pass1的基础上，处理instruction
     * 通过`print_code`，打印解析结果
 
+### 处理instruction
+![inst_layout](pictures/inst_layout.png)
 
+* instruction的结构由`instruction_set`定义：
+    * 以`{"irmovq", HPACK(I_IRMOVQ, F_NONE), 10, I_ARG, 2, 8, R_ARG, 1, 0}`为例：
+        * 长度为10
+        * 第一个argument是I_ARG
+        * 第二个argument是R_ARG
+
+如果pass==2，`finish_line`会在最后处理instruction，通过下面的函数，向`char code[10]`填入对应的值，得到当前instruction的机器码：
+* `get_reg`处理R_ARG
+    * 根据`arg_pos`和`arg_hi`，向`code`中的对应位置填入寄存器ID
+* `get_mem`处理M_ARG
+    * 根据memory参数的位置，向`code`中的对应位置填入寄存器ID和偏移地址
+    * 包含M_ARG的指令只有两类：rmmovq和mrmovq，其中M_ARG的格式可能是(没有Reg的直接使用Num/Ident当作memory的地址)：
+        * Num(Reg), (Reg), Num, Ident, Ident(Reg)
+* `get_num`处理I_ARG
+    * 根据立即数在code中的位置和立即数的长度，向`code`中的对应位置填入立即数
 
 
