@@ -601,8 +601,9 @@ extern FILE *yyin;
 
 static void usage(char *pname)
 {
-    printf("Usage: %s [-V[n]] file.ys\n", pname);
+    printf("Usage: %s [-V[n] -v] file.ys\n", pname);
     printf("   -V[n]  Generate memory initialization in Verilog format (n-way blocking)\n");
+    printf("   -v  Enable verbose\n");
     exit(0);
 }
 
@@ -614,7 +615,7 @@ int main(int argc, char *argv[])
     int nextarg = 1;
     if (argc < 2)
         usage(argv[0]);
-    if (argv[nextarg][0] == '-')
+    while (argv[nextarg][0] == '-')
     {
         char flag = argv[nextarg][1];
         switch (flag)
@@ -630,6 +631,10 @@ int main(int argc, char *argv[])
                     exit(1);
                 }
             }
+            nextarg++;
+            break;
+        case 'v':
+            verbose = 1;
             nextarg++;
             break;
         default:

@@ -51,11 +51,11 @@ To implement a lexer for Y86-64 processor. Then we can use is to convert Y86-64 
 ## Flex程序: yas-grammar.lex
 ### option配置
 ```lex
-%option noyywrap
 %option noinput
 %option nounput
 ```
 * noyywrap表示不需要自定义的`yywrap()`，默认返回1，代表只进行一次文件扫描
+    * 例子中自定义了`yywrap()`函数，可在最后打印symbol table
 * noinput表示不添加`input()`函数，以消除编译警告`warning: ‘input’ defined but not used`
 * nounput表示不添加`yyunput()`函数，以消除编译警告`warning: ‘yyunput’ defined but not used`
 

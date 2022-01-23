@@ -18,6 +18,11 @@
 int yylex();
 
 /**
+ * @brief called at the end of the scanner. If returns non-zero, the scanner terminates.
+ */
+int yywrap();
+
+/**
  * @brief save one line to a global variable
  */
 void save_line(char *);

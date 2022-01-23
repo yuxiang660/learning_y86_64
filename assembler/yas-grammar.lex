@@ -3,7 +3,6 @@
 #include "yas.h"
 %}
 
-%option noyywrap
 %option noinput
 %option nounput
 
