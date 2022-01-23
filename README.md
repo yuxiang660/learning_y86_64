@@ -185,3 +185,15 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
 ### C函数定义
 * [yas-grammar.lex](assembler/yas-grammar.lex)没有此段内容，相关C函数和main函数都定义在了其他源文件内
 
+## 主程序main
+main函数定义在[yas.c](assembler/yas.c)中，它包括了两次pass
+* pass1
+    * 检查汇编代码是否有语法错误
+    * `add_symbol`
+* pass2
+    * 在pass1的基础上，处理instruction
+    * 通过`print_code`，打印解析结果
+
+
+
+

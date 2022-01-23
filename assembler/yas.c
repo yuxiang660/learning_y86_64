@@ -140,16 +140,17 @@ static void hexstuff(char *dest, word_t value, int len)
     }
 }
 
+/**
+ * Printing format:
+ *  0xHHHH: cccccccccccccccccccc | <line>
+ *      where HHHH is address
+ *      cccccccccccccccccccc is code
+ */
 void print_code(FILE *out, int pos)
 {
     char outstring[33];
     if (pos > 0xFFF)
     {
-        /* Printing format:
-       0xHHHH: cccccccccccccccccccc | <line>
-       where HHHH is address
-       cccccccccccccccccccc is code
-    */
         if (tcount)
         {
             int i;
@@ -168,11 +169,6 @@ void print_code(FILE *out, int pos)
     }
     else
     {
-        /* Printing format:
-       0xHHH: cccccccccccccccccccc | <line>
-       where HHH is address
-       cccccccccccccccccccc is code
-    */
         if (tcount)
         {
             int i;
