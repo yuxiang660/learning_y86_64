@@ -18,10 +18,9 @@
 int yylex();
 
 /**
- * @brief save line
- * 
+ * @brief save one line to a global variable
  */
-void save_line(char*);
+void save_line(char *);
 
 /**
  * @brief finish line
@@ -33,13 +32,13 @@ void finish_line();
  * @brief add instruction
  * 
  */
-void add_instr(char*);
+void add_instr(char *);
 
 /**
  * @brief add register
  * 
  */
-void add_reg(char*);
+void add_reg(char *);
 
 /**
  * @brief add number
@@ -57,20 +56,20 @@ void add_punct(char);
  * @brief add id
  * 
  */
-void add_ident(char*);
+void add_ident(char *);
 
 /**
  * @brief fail func
  * 
  */
-void fail(const char*);
+void fail(const char *);
 
 /**
  * @brief convert hex string to interger
  * 
  * @return unsigned long long 
  */
-unsigned long long atollh(const char*);
+unsigned long long atollh(const char *);
 
 // Current line number
 extern int lineno;

@@ -122,6 +122,41 @@ Reg           %rax|%rcx|%rdx|%rbx|%rsi|%rdi|%rsp|%rbp|%r8|%r9|%r10|%r11|%r12|%r1
     * `REJECT` directs the scanner to proceed on to the "second best" rule which matched the input (or a prefix of the input)
         * 此处会对当前行继续匹配下面的规则
 
+* `{Blank}*{Return}*{Newline}`
+    * 匹配换行符，表示一行结束
+    * 通过`finish_line`处理当前行的解析出的token，进入`finish_line`的时候，当前行的token都已经解析完成，并且存入了`tokens`数据中
+        * token的类型有：`{ TOK_IDENT, TOK_NUM, TOK_REG, TOK_INSTR, TOK_PUNCT, TOK_ERR }`
+        * token的内容是：
+        ```cpp
+        /* Token representation */
+        typedef struct {
+            char *sval; /* String    */
+            word_t ival;   /* Integer   */
+            char cval;  /* Character */
+            token_t type; /* Type    */
+        } token_rec;
+        ```
+
+* `{Ident}`
+    * 匹配标识符
+    * 通过`add_token(TOK_IDENT, s, 0, ' ')`添加token
+
+* `[-]?{Digit}+`和`"0"[xX]{Hex}+`
+    * 匹配数字，支持十进制和十六进制
+    * 通过`add_token(TOK_NUM, NULL, i, ' ')`添加token
+
+* `{Reg}`
+    * 匹配寄存器ID
+    * 通过`add_token(TOK_REG, s, 0, ' ')`添加token
+
+* `{Instr}`
+    * 匹配Y86的指令名
+    * 通过`add_token(TOK_INSTR, s, 0, ' ')`添加token
+
+* `[():,]`
+    * 匹配单字符：`(`, `)`或者`,`
+    * 通过`add_token(TOK_PUNCT, NULL, 0, c)`添加token
+
 ### C函数定义
 * [yas-grammar.lex](assembler/yas-grammar.lex)没有此段内容，相关C函数和main函数都定义在了其他源文件内
 
