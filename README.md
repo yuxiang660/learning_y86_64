@@ -214,3 +214,95 @@ main函数定义在[yas.c](assembler/yas.c)中，它包括了两次pass
     * 根据立即数在code中的位置和立即数的长度，向`code`中的对应位置填入立即数
 
 
+# Y86-64 HCL
+Y86定义了自己的HCL(Hardware Control Language)，具体语法可参考CSAPP的第四章内容。[hcl](hcl)中包含了两个工具：
+* hcl2c
+    * HCL到C的转换器
+* hcl2v
+    * HCL到Verilog的转换器
+
+## HCL词法分析器
+[hcl.lex](hcl/hcl.lex)是HCL的词法分析flex代码，和assembler中的词法分析代码类似。
+
+### 声明
+定义在`%{ ... %}`的内容，会被拷贝的生成的C文件中，里面包括了头文件和一些变量声明，如下：
+
+```cpp
+%{
+#include <stdio.h>
+#include "node.h"
+#define YYSTYPE node_ptr
+#include "hcl.tab.h"
+
+extern YYSTYPE yylval;
+extern int lineno;
+%}
+```
+
+### 规则段
+```c
+[ \r\t\f]              ;
+[\n]                  lineno++;
+"#".*\n               lineno++ ;
+quote                 return(QUOTE);
+boolsig               return(BOOLARG);
+bool                  return(BOOL);
+wordsig               return(WORDARG);
+word                  return(WORD);
+in                    return(IN);
+'[^']*'               yylval = make_quote(yytext); return(QSTRING);
+[a-zA-Z][a-zA-Z0-9_]* yylval = make_var(yytext); return(VAR);
+[0-9][0-9]*           yylval = make_num(yytext); return(NUM);
+-[0-9][0-9]*          yylval = make_num(yytext); return(NUM);
+"="                   return(ASSIGN);
+";"                   return(SEMI);
+":"                   return(COLON);
+","                   return(COMMA);
+"("                   return(LPAREN);
+")"                   return(RPAREN);
+"{"                   return(LBRACE);
+"}"                   return(RBRACE);
+"["                   return(LBRACK);
+"]"                   return(RBRACK);
+"&&"                  return(AND);
+"||"                  return(OR);
+"!="                  yylval = make_var(yytext); return(COMP);
+"=="                  yylval = make_var(yytext); return(COMP);
+"<"                   yylval = make_var(yytext); return(COMP);
+"<="                  yylval = make_var(yytext); return(COMP);
+">"                   yylval = make_var(yytext); return(COMP);
+">="                  yylval = make_var(yytext); return(COMP);
+"!"                   return(NOT);
+```
+* 规则段定义了词法分析器解析hcl文件的规则，在匹配到相应的符号后，返回对应的token告知语法分析器
+    * 其中，各种符号定义在"hcl.tab.h"文件中，如COMP等。此文件由语法分析器产生
+* `yylval`的类型是`node_ptr`，由[node.h](hcl/node.h)定义：
+    ```cpp
+    typedef enum
+    {
+        N_QUOTE,
+        N_VAR,
+        N_NUM,
+        N_AND,
+        N_OR,
+        N_NOT,
+        N_COMP,
+        N_ELE,
+        N_CASE
+    } node_type_t;
+
+    typedef struct NODE
+    {
+        node_type_t type;
+        int isbool; /* Is this node a Boolean expression? */
+        char *sval;
+        struct NODE *arg1;
+        struct NODE *arg2;
+        int ref; /* For var, how many times has it been referenced? */
+        struct NODE *next;
+    }*node_ptr;
+    ```
+    * 规定了9中node类型，在[node.c](hcl/node.c)分别定义了每种node的make函数
+
+
+

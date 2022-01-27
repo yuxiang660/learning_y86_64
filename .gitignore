@@ -3,4 +3,8 @@ yas-grammar.c
 yas
 .vscode/
 *.o
+hcl_lex.c
+hcl.tab.*
+hcl2c
+hcl2v
 
