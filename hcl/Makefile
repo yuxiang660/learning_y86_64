@@ -5,22 +5,22 @@ LEX=flex
 YACC=bison
 
 LEX_SRC=hcl.lex
-LEX_OUT=hcl_lex
+LEX_OUT=hcl_lex.c
 
 YACC_SRC=hcl.y
-YACC_OUT=hcl.tab
+YACC_OUT=hcl.tab.c
 
 HCL2C=hcl2c
 HCL2V=hcl2v
 
-SRCS := $(LEX_OUT).c $(YACC_OUT).c node.c outgen.c
+SRCS := $(LEX_OUT) $(YACC_OUT) node.c outgen.c
 
 all: $(HCL2C) $(HCL2V)
 
-$(LEX_OUT).c: $(LEX_SRC)
+$(LEX_OUT): $(LEX_SRC)
 	$(LEX) -o $@ $<
 
-$(YACC_OUT).c: $(YACC_SRC)
+$(YACC_OUT): $(YACC_SRC)
 	$(YACC) -d $<
 
 $(HCL2C): $(SRCS)
@@ -36,4 +36,4 @@ run_v:
 	./$(HCL2V) < example.hcl
 
 clean:
-	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT).c $(YACC_OUT).* *.o
+	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT) $(YACC_OUT) hcl.tab.h
