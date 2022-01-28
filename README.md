@@ -310,7 +310,7 @@ in                    return(IN);
 ![hcl2c](pictures/hcl2c.png)
 
 ### Signal Declarations
-HCL只支持两种数据类型：`bool`和`word`。**注意：由于版本的不同，文档中的`int`在这里都替换为`word`。**
+HCL只支持两种数据类型：`bool`和`word`。**注意：由于版本的不同(32bit vs 64bit)，文档中的`int`在这里都替换为`word`。**
 
 下面是对signal的声明，其中`C-expr`是用来在生成C文件时替换的名字。
 * `boolsig name 'C-expr'`
