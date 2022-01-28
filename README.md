@@ -396,5 +396,32 @@ in                    return(IN);
     * 规定了9中node类型，在[node.c](hcl/node.c)分别定义了每种node的make函数
 
 ## HCL语法分析器
+[hcl.y](hcl/hcl.y)是HCL的bison源文件。我们可利用[Railroad Diagram Generator](https://bottlecaps.de/rr/ui)工具，生成对应的syntax diagram。由于此工具只支持[EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)，我们将hcl.y的语法部分转换成EBNF的格式，如下：
+```
+statements ::= statement*
+
+statement  ::= QUOTE QSTRING
+             | BOOLARG VAR QSTRING
+             | WORDARG VAR QSTRING
+             | BOOL VAR ASSIGN expr SEMI
+             | WORD VAR ASSIGN expr SEMI
+
+expr       ::= VAR
+             | NUM
+             | LPAREN expr RPAREN
+             | NOT expr
+             | expr AND expr
+             | expr OR expr
+             | expr COMP expr
+             | expr IN LBRACE exprlist RBRACE
+             | LBRACK caselist RBRACK
+
+exprlist   ::= expr
+             | exprlist COMMA expr
+
+caselist   ::= (caselist expr COLON expr SEMI)*
+```
+通过工具，我们可以得到各语法单元的syntax diagram。例如：statement的语法图如下：<br>
+![statement](pictures/statement.png)
 
 
