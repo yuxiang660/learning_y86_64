@@ -61,7 +61,7 @@ void init_node(int argc, char **argv)
     int c;
     int max_column = 75;
     int first_indent = 4;
-    int other_indents = 2;
+    int other_indents = 4;
 
     /* Parse the command line arguments */
     while ((c = getopt(argc, argv, "hna")) != -1)

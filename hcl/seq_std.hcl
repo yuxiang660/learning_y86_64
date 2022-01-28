@@ -11,10 +11,20 @@
 quote '#include <stdio.h>'
 quote '#include "isa.h"'
 quote '#include "sim.h"'
+quote ''
 quote 'int sim_main(int argc, char *argv[]);'
-quote 'word_t gen_pc(){return 0;}'
+quote ''
+quote 'word_t gen_pc()'
+quote '{'
+quote '    return 0;'
+quote '}'
+quote ''
 quote 'int main(int argc, char *argv[])'
-quote '  {plusmode=0;return sim_main(argc,argv);}'
+quote '{'
+quote '    plusmode=0;'
+quote '    return sim_main(argc,argv);'
+quote '}'
+quote ''
 
 ####################################################################
 #    Declarations.  Do not change/remove/delete any of these       #
