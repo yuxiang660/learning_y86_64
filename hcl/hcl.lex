@@ -20,7 +20,7 @@ quote                 return(QUOTE);
 boolsig               return(BOOLARG);
 bool                  return(BOOL);
 wordsig               return(WORDARG);
-word                   return(WORD);
+word                  return(WORD);
 in                    return(IN);
 '[^']*'               yylval = make_quote(yytext); return(QSTRING);
 [a-zA-Z][a-zA-Z0-9_]* yylval = make_var(yytext); return(VAR);

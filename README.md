@@ -424,4 +424,18 @@ caselist   ::= (caselist expr COLON expr SEMI)*
 通过工具，我们可以得到各语法单元的syntax diagram。例如：statement的语法图如下：<br>
 ![statement](pictures/statement.png)
 
+### NODE结构
+在词法分析章节中，我们介绍了`NODE`结构，它是token最基本的单位，是一个二元的操作，并通过链表的方式和其他node相连。之所以需要将多个nodes相连，是为了实现`exprlist`和`caselist`的语法单元。
+
+词法分析阶段可以构造的token类型有：quote，num和var，因为它们的创建不依赖其他符号。需要注意的是，创建的node是通过`yylval`从flex传递到bison的，而不是直接return的，直接return的始终都是token本身。
+
+通过移进/归约的规则，bison在某条规则满足的时候，触发不同的动作：
+* 构建更复杂的node
+    * 例如，`expr: NOT expr { $$=make_not($2); }`规则会在得到`NOT`和`expr`后，触发`make_not`函数，生成一个新的node，并赋值给归约后新的`expr`
+* 生成相应C代码
+    * 例如，`statement: QUOTE QSTRING { insert_code($2); }`规则会在得到`QUOTE`和`QSTRING`后，触发`insert_code`函数，打印`QSTRING`的内容
+* 添加symbol
+    * 例如，`statement: BOOLARG VAR QSTRING { add_arg($2, $3, 1); }`规则会调用`add_arg`向符号表中添加`VAR`和`QSTRING`的内容，以便在生成C代码时可以找到VAR对应的字符串
+
+
 
