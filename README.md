@@ -382,7 +382,7 @@ long long gen_Out4()
 
 int main(int argc, char *argv[]) {
     if (argc < 6) {
-        printf("Please input five arguments, such as: ./mux4 0 1 2 3 4\n");
+        printf("Please input five arguments: code, A, B, C and D, such as: ./mux4 0 1 2 3 4\n");
         return -1;
     }
     data_names = argv+2;
@@ -393,3 +393,5 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+* 在HCL文件中，`boolsig s0`和`bool s0`并不相同，一个对应C语言中的`s0_val`变量，而另一个对应C语言中的`gen_s0`函数
+

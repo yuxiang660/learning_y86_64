@@ -43,7 +43,7 @@ word Out4 = [
 ## compute the values and print the output
 quote 'int main(int argc, char *argv[]) {'
 quote '    if (argc < 6) {'
-quote '        printf("Please input five arguments, such as: ./mux4 0 1 2 3 4\n");'
+quote '        printf("Please input five arguments: code, A, B, C and D, such as: ./mux4 0 1 2 3 4\n");'
 quote '        return -1;'
 quote '    }'
 quote '    data_names = argv+2;'
