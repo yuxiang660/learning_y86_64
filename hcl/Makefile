@@ -37,10 +37,10 @@ mux4:
 	$(CC) $(CFLAGS) mux4.c -o mux4
 
 seq:
-	./$(HCL2C) < seq_std.hcl
+	./$(HCL2C) < seq_std.hcl > seq_std.c
 
 seq_v:
 	./$(HCL2V) < seq_std.hcl
 
 clean:
-	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT) $(YACC_OUT) hcl.tab.h mux4*
+	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT) $(YACC_OUT) hcl.tab.h mux4* seq_std.c

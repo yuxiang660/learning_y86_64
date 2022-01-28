@@ -87,6 +87,7 @@ expr:
 exprlist:
        expr { $$=$1; }
        | exprlist COMMA expr { $$=concat($1, $3); }
+       ;
 
 caselist:
        /* Empty */ { $$=NULL; }
