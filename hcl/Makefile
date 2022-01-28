@@ -32,8 +32,15 @@ $(HCL2V): $(SRCS)
 run:
 	./$(HCL2C) < example.hcl
 
-run_v:
-	./$(HCL2V) < example.hcl
+mux4:
+	./$(HCL2C) < example.hcl > mux4.c
+	$(CC) $(CFLAGS) mux4.c -o mux4
+
+seq:
+	./$(HCL2C) < seq_std.hcl
+
+seq_v:
+	./$(HCL2V) < seq_std.hcl
 
 clean:
-	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT) $(YACC_OUT) hcl.tab.h
+	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT) $(YACC_OUT) hcl.tab.h mux4*

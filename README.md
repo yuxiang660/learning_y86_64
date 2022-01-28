@@ -304,5 +304,92 @@ in                    return(IN);
     ```
     * 规定了9中node类型，在[node.c](hcl/node.c)分别定义了每种node的make函数
 
+## Y86 HCL概述
+[waside-hcl.pdf](doc/waside-hcl.pdf)介绍了Y86 HCL。下图显式了通过HCL生成虚拟机的过程。
 
+![hcl2c](pictures/hcl2c.png)
 
+### Signal Declarations
+HCL只支持两种数据类型：`bool`和`word`。**注意：由于版本的不同，文档中的`int`在这里都替换为`word`。**
+
+下面是对signal的声明，其中`C-expr`是用来在生成C文件时替换的名字。
+* `boolsig name 'C-expr'`
+* `wordsig name 'C-expr'`
+
+### Quoted Text
+quote后跟的字符串会被直接拷贝到生成的C文件中，用于头文件或变量的声明：
+* `quote 'string'`
+
+### Expressions
+HCL有两种类型的表达式：boolean(`bool-expr`)和integer(`word-expr`)。
+
+* Boolean表达式
+    * 下图显式了不同种类的boolean表达式：<br>
+    ![hcl_bool_expr](pictures/hcl_bool_expr.png)
+* Integer表达式
+    * 总共三种integer表达式
+        * numbers
+            * 常数
+        * named integer signals
+            * `wordsig name 'C-expr'`
+        * case expressions
+            * 如果`bool-expr_`满足，则返回它的`word-expr_`为当前表达式的值
+            ```
+            [
+                bool-expr1 : word-expr1
+                bool-expr2 : word-expr2
+                ...
+                bool-exprk : word-exprk
+                1          : default word-expr
+            ]
+            ```
+
+### Blocks
+```c
+bool name = bool-expr; // Boolean block
+word name = word-expr;   // word-level block
+```
+当转换成C代码时，一个名为`name`的block会变成`gen_name`函数，它没有参数，并返回int类型。
+
+### HCL Example
+[example.hcl](hcl/example.hcl)描述了如下的MUX4电路。
+
+![mux4](pictures/mux4.png)
+
+生成的C代码如下：
+```cpp
+char simname[] = "Y86-64 Processor";
+#include <stdio.h>
+#include <stdlib.h>
+int code_val, s0_val, s1_val;
+char **data_names;
+long long gen_s1()
+{
+    return ((code_val) == 2 || (code_val) == 3);
+}
+
+long long gen_s0()
+{
+    return ((code_val) == 1 || (code_val) == 3);
+}
+
+long long gen_Out4()
+{
+    return ((!(s1_val) & !(s0_val)) ? (atoi(data_names[0])) : !(s1_val) ? 
+      (atoi(data_names[1])) : !(s0_val) ? (atoi(data_names[2])) : 
+      (atoi(data_names[3])));
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 6) {
+        printf("Please input five arguments, such as: ./mux4 0 1 2 3 4\n");
+        return -1;
+    }
+    data_names = argv+2;
+    code_val = atoi(argv[1]);
+    s1_val = gen_s1();
+    s0_val = gen_s0();
+    printf("Out = %lld\n", gen_Out4());
+    return 0;
+}
+```
