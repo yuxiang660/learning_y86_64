@@ -437,5 +437,70 @@ caselist   ::= (caselist expr COLON expr SEMI)*
 * 添加symbol
     * 例如，`statement: BOOLARG VAR QSTRING { add_arg($2, $3, 1); }`规则会调用`add_arg`向符号表中添加`VAR`和`QSTRING`的内容，以便在生成C代码时可以找到VAR对应的字符串
 
+### gen_funct函数
+`gen_funct`函数用于产生gen_xxx() C代码，对应两条语法规则：
+* `BOOL VAR ASSIGN expr SEMI`
+* `WORD VAR ASSIGN expr SEMI`
+
+例如，`bool s1 = code in { 2, 3 };`对应生成的C代码是:
+```c
+long long gen_s1()
+{
+    return ((code_val) == 2 || (code_val) == 3);
+}
+```
+
+#### IN expression
+对于IN expression (`expr IN LBRACE exprlist RBRACE`), 通过以下代码进行处理：
+```cpp
+case N_ELE:
+    outgen_print("(");
+    outgen_upindent();
+    for (ele = expr->arg2; ele; ele = ele->next)
+    {
+        gen_expr(expr->arg1);
+        outgen_print(" == ");
+        gen_expr(ele);
+        if (ele->next)
+            outgen_print(" || ");
+    }
+    outgen_print(")");
+    outgen_downindent();
+    break;
+```
+* IN表达式的第二个参数是一个node的链表，在for循环中被展开，并通过`||`相连
+
+#### case list
+对于case list(`expr COLON expr SEMI`), 通过以下代码进行处理：
+```cpp
+case N_CASE:
+    outgen_print("(");
+    outgen_upindent();
+    int done = 0;
+    for (ele = expr; ele && !done; ele = ele->next)
+    {
+        if (ele->arg1->type == N_NUM && atoll(ele->arg1->sval) == 1)
+        {
+            gen_expr(ele->arg2);
+            done = 1;
+        }
+        else
+        {
+            gen_expr(ele->arg1);
+            outgen_print(" ? ");
+            gen_expr(ele->arg2);
+            outgen_print(" : ");
+        }
+    }
+    if (!done)
+        outgen_print("0");
+    outgen_print(")");
+    outgen_downindent();
+```
+* 对于一个case语句，有两种类型：
+    * arg1是1
+        * 最后一个case语句，直接输出arg2，结束这个caselist
+    * arg1不是1
+        * 不是最后一个case语句，通过`arg1 ? arg2 : ...`继续打印，如果没有遇到1结尾的case，直接输出0作为默认返回值
 
 
