@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -O1 -g
+CFLAGS=-Wall -g
 # http://dinosaur.compilertools.net/flex/manpage.html
 LEX=flex
 
@@ -9,7 +9,7 @@ ASSEMBLER=yas
 SRCS := yas.c isa.c
 OBJS := $(LEX_TARGET).o $(SRCS:.c=.o)
 
-all: $(ASSEMBLER)
+all: clean $(ASSEMBLER)
 
 $(LEX_TARGET).c: $(LEX_TARGET).lex
 	$(LEX) -o $@ $<
