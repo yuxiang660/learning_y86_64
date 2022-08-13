@@ -10,3 +10,4 @@ hcl2v
 mux4.c
 mux4
 seq_std.c
+*.v

@@ -36,11 +36,14 @@ mux4:
 	./$(HCL2C) < example.hcl > mux4.c
 	$(CC) $(CFLAGS) mux4.c -o mux4
 
+mux4_v:
+	./$(HCL2V) < example.hcl | tee mux4.v
+
 seq:
 	./$(HCL2C) < seq_std.hcl > seq_std.c
 
 seq_v:
-	./$(HCL2V) < seq_std.hcl
+	./$(HCL2V) < seq_std.hcl | tee seq_std.v
 
 clean:
 	rm -rf $(HCL2C) $(HCL2V) $(LEX_OUT) $(YACC_OUT) hcl.tab.h mux4* seq_std.c
