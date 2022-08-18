@@ -26,3 +26,13 @@ run:
 
 clean:
 	rm -rf $(ASSEMBLER) $(LEX_TARGET).c *.o *.yo
+
+yis.o: yis.c isa.h
+	$(CC) $(CFLAGS) -c yis.c
+
+yis: yis.o isa.o
+	$(CC) $(CFLAGS) yis.o isa.o -o yis
+
+run_yis:
+	./yas asum.ys
+	./yis asum.yo
